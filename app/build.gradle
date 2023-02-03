@@ -85,6 +85,16 @@ dependencies {
     kapt "androidx.hilt:hilt-compiler:1.0.0"
     implementation 'androidx.hilt:hilt-navigation-compose:1.1.0-alpha01'
 
+    // For Robolectric tests.
+    testImplementation 'com.google.dagger:hilt-android-testing:2.44'
+    // ...with Kotlin.
+    kaptTest 'com.google.dagger:hilt-android-compiler:2.44'
+
+    // For instrumented tests.
+    androidTestImplementation 'com.google.dagger:hilt-android-testing:2.44'
+    // ...with Kotlin.
+    kaptAndroidTest 'com.google.dagger:hilt-android-compiler:2.44'
+
     //Fragment ktx
     def fragment_version = '1.4.1'
     implementation "androidx.fragment:fragment-ktx:$fragment_version"
