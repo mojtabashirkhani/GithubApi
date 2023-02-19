@@ -1,6 +1,6 @@
 package com.example.github.data.remote.model
 
-data class TrendingRepoResponse(
+data class TrendingRepoResponseModel(
     val author: String,
     val avatar: String,
     val description: String,
