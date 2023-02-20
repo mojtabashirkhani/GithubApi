@@ -4,6 +4,7 @@ import android.os.Environment
 import com.example.github.data.remote.GithubService
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
+import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -29,8 +30,8 @@ class NetworkModule {
         return OkHttpClient.Builder()
 //            .addNetworkInterceptor(StethoInterceptor())
 //            .addInterceptor(DefaultRequestInterceptor())
-            .readTimeout(15, TimeUnit.SECONDS)
-            .connectTimeout(15, TimeUnit.SECONDS)
+            .readTimeout(1, TimeUnit.MINUTES)
+            .writeTimeout(1, TimeUnit.MINUTES)
             .cache(cache)
             .build()
     }
@@ -42,30 +43,41 @@ class NetworkModule {
         return OkHttpClient.Builder()
 //            .addNetworkInterceptor(StethoInterceptor())
 //            .addInterceptor(DefaultRequestInterceptor())
-            .readTimeout(15, TimeUnit.SECONDS)
-            .connectTimeout(15, TimeUnit.SECONDS)
+            .readTimeout(1, TimeUnit.MINUTES)
+            .writeTimeout(1, TimeUnit.MINUTES)
             .build()
     }
 
     @Provides
     @Singleton
-    fun provideGson(): Gson {
-        return GsonBuilder().create()
+    fun providesGson(): Gson {
+        return Gson()
     }
+
+    @Provides
+    @Singleton
+    fun providesGsonConverterFactory(): GsonConverterFactory {
+        return GsonConverterFactory.create()
+    }
+
+
+
 
     @Singleton
     @Provides
-    fun provideRetrofit(gson: Gson, @Named("cached") client: OkHttpClient): Retrofit.Builder {
+    fun provideRetrofit(gson: GsonConverterFactory, @Named("cached") client: OkHttpClient): Retrofit.Builder {
         return Retrofit.Builder()
             .client(client)
-            .baseUrl("https://api.github.com")
-            .addConverterFactory(GsonConverterFactory.create(gson))
+            .addConverterFactory(gson)
+            .addCallAdapterFactory(CoroutineCallAdapterFactory())
     }
 
     @Provides
     @Singleton
-    fun provideGithubService(@NonNull retrofit: Retrofit): GithubService {
-        return retrofit.create(GithubService::class.java)
+    fun provideGithubService(retrofit: Retrofit.Builder): GithubService {
+        return retrofit.baseUrl("https://api.github.com")
+            .build()
+            .create(GithubService::class.java)
     }
 
 }

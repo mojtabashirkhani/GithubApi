@@ -15,7 +15,7 @@ import javax.inject.Inject
 @HiltViewModel
 class MainViewModel @Inject constructor(private val trendingRepoRepository: TrendingRepoRepository): ViewModel() {
 
-    private val githubApiState = MutableStateFlow(
+    val githubApiState = MutableStateFlow(
         GithubApiState(
             Status.LOADING,
             emptyList<TrendingRepoResponseModel>(), ""
